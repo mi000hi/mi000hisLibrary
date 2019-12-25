@@ -16,7 +16,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-public class Leinwand2D extends JPanel {
+public class Canvas2D extends JPanel {
 
 	private int margin; // margin around coordinate system
 
@@ -61,7 +61,7 @@ public class Leinwand2D extends JPanel {
 	 *                       functions.
 	 *                       {@code functions.size() == functionColors.size()}
 	 */
-	public Leinwand2D(ArrayList<ArrayList<Complex>> functions, ArrayList<Color> functionColors,
+	public Canvas2D(ArrayList<ArrayList<Complex>> functions, ArrayList<Color> functionColors,
 			ArrayList<ArrayList<Complex>> vectorField, ArrayList<Color> vectorFieldColors) {
 
 		setDefaultValues();
@@ -82,7 +82,7 @@ public class Leinwand2D extends JPanel {
 	 * 
 	 * @param parent parent class, this is where we get informations from
 	 */
-	public Leinwand2D() {
+	public Canvas2D() {
 
 		// initialize final variables
 		setDefaultValues();
