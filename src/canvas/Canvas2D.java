@@ -676,7 +676,7 @@ public class Canvas2D extends JPanel {
 
 		functions2D.add(function);
 	}
-
+	
 	/**
 	 * @param outputArea adjust the output area size
 	 */

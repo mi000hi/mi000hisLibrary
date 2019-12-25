@@ -27,6 +27,10 @@ public class Function2D {
 	private double[] range; // range for the functionvariable, where this function is active (length == 2)
 	private Color functionColor; // color of this function if it gets painted
 
+	/*
+	 * CONSTRUCTORS
+	 */
+	
 	/**
 	 * Constructor of a real 2D function. functionpoints in the given range will be
 	 * calculated with distance {@code DEFAULt_CALCULATION_STEP} while in this
@@ -54,6 +58,14 @@ public class Function2D {
 		// set range for this function
 		setRange(range);
 	}
+	
+	/*
+	 * MAIN METHOD
+	 */
+	
+	/*
+	 * OTHER METHODS
+	 */
 
 	/**
 	 * adds a given point with input and outputvalue to the {@code functionPoints}
@@ -147,7 +159,9 @@ public class Function2D {
 		return range[0] == range[1];
 	}
 
-	/* GETTERS */
+	/*
+	 * GETTERS
+	 */
 
 	/**
 	 * returns the color of this function
@@ -362,7 +376,9 @@ public class Function2D {
 		}
 	}
 
-	/* SETTERS */
+	/*
+	 * SETTERS
+	 */
 
 	/**
 	 * sets a new range for this function and calculates the functionpoints

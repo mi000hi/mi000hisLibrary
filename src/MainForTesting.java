@@ -18,7 +18,7 @@ public class MainForTesting {
 		/*
 		 * create canvas to paint functions on
 		 */
-		Leinwand2D canvas2d = new Leinwand2D();
+		Canvas2D canvas2d = new Canvas2D();
 		
 		/*
 		 * create the functions to be painted
