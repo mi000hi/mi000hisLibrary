@@ -208,6 +208,8 @@ public class ComplexCalculator {
 
 			switch (function) {
 
+			case "x":
+			case "y":
 			case "z":
 				return z.multiply(new Complex(-1, 0, true));
 
@@ -223,6 +225,8 @@ public class ComplexCalculator {
 
 			switch (function) {
 
+			case "x":
+			case "y":
 			case "z":
 				return z;
 

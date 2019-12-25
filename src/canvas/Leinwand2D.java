@@ -16,7 +16,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-
 public class Leinwand2D extends JPanel {
 
 	private int margin; // margin around coordinate system
@@ -139,7 +138,7 @@ public class Leinwand2D extends JPanel {
 
 		// draw the color legends
 //		drawColorLegend(g);
-		
+
 		// draw 2d functions
 		draw2DFunctions(g);
 
@@ -246,7 +245,7 @@ public class Leinwand2D extends JPanel {
 		}
 
 	}
-	
+
 	/**
 	 * Draws the functions y = g(x)
 	 * 
@@ -268,12 +267,11 @@ public class Leinwand2D extends JPanel {
 
 			currentFunction = functions2D.get(i);
 			currentFunctionPoints = currentFunction.getPoints(0.1);
-			
-			if(currentFunction.emptyRange()) {
+
+			if (currentFunction.emptyRange()) {
 				continue;
 			}
-			
-			
+
 			currentColor = currentFunction.getColor();
 			lastP = getPointAt(currentFunctionPoints.get(0).getRe(), currentFunctionPoints.get(0).getIm());
 			distanceToLastPoint = Double.MAX_VALUE;
@@ -283,7 +281,7 @@ public class Leinwand2D extends JPanel {
 			// draw each outputPoint
 			for (int j = 0; j < currentFunctionPoints.size(); j++) {
 
-				if ((currentPoint = currentFunctionPoints.get(j)) == null) {
+				if ((currentPoint = currentFunctionPoints.get(j)) == null || !isInOutputRange(currentPoint)) {
 					lastP = currentP;
 					continue;
 				}
@@ -299,7 +297,7 @@ public class Leinwand2D extends JPanel {
 					// g.drawLine(lastP.x, lastP.y, currentP.x, currentP.y);
 
 					Graphics2D g2 = (Graphics2D) g;
-					g2.setStroke(new BasicStroke(functionLineWidth));
+					g2.setStroke(new BasicStroke(functionLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 					distanceToNextPoint = Math
 							.sqrt(Math.pow(lastP.x - currentP.x, 2) + Math.pow(lastP.y - currentP.y, 2));
@@ -308,23 +306,31 @@ public class Leinwand2D extends JPanel {
 					}
 					g2.draw(new Line2D.Float(lastP.x, lastP.y, currentP.x, currentP.y));
 
-					// draw a bigger dot at the first and last point
-					if (j == 0 || j == currentFunctionPoints.size() - 1) {
-						g.setColor(Color.white);
-						g.fillOval(currentP.x - dotwidth, currentP.y - dotwidth, 2 * dotwidth, 2 * dotwidth);
-						g.setColor(currentColor);
-					}
-
 					if (!lastP.equals(currentP)) {
-						
+
 						lastP = currentP;
 						distanceToLastPoint = distanceToNextPoint;
 					}
 				}
 			}
 
+			// draw a bigger dot at the first and last point
+			g.setColor(Color.white);
+			g.fillOval(
+					getPointAt(currentFunctionPoints.get(0).getRe(), currentFunctionPoints.get(0).getIm()).x - dotwidth,
+					getPointAt(currentFunctionPoints.get(0).getRe(), currentFunctionPoints.get(0).getIm()).y - dotwidth,
+					2 * dotwidth, 2 * dotwidth);
+			g.fillOval(
+					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(), currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).x - dotwidth,
+					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(), currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).y - dotwidth,
+					2 * dotwidth, 2 * dotwidth);
 		}
 
+	}
+	
+	private boolean isInOutputRange(Complex point) {
+		
+		return point.getRe() >= outputArea[0] && point.getRe() <= outputArea[1] && point.getIm() >= outputArea[2] && point.getIm() <= outputArea[3];
 	}
 
 	/**
@@ -660,14 +666,14 @@ public class Leinwand2D extends JPanel {
 		functionColors.add(functionColor);
 
 	}
-	
+
 	/**
 	 * adds a 2d function to this canvas
 	 * 
 	 * @param function
 	 */
 	public void addFunction2D(Function2D function) {
-		
+
 		functions2D.add(function);
 	}
 

@@ -23,20 +23,20 @@ public class MainForTesting {
 		/*
 		 * create the functions to be painted
 		 */
-		Function2D function01 = new Function2D("0-sqrt(-z)", 'x', new double[] {-2, 0}, Color.yellow);
-		Function2D function02 = new Function2D("sqrt(z)", 'x', new double[] {0, 2}, Color.red);
-		Function2D function03 = new Function2D("1/z", 'x', new double[] {-1, 2}, Color.green);
-		Function2D function04 = new Function2D("sin(z)/cos(z)", 'x', new double[] {-4, 4}, Color.blue);
-		Function2D function05 = new Function2D("sin(z)/cos(z)", 'y', new double[] {-4, 4}, Color.orange);
+//		Function2D function01 = new Function2D("0-sqrt(-z)", 'x', new double[] {-2, 0}, Color.yellow);
+//		Function2D function02 = new Function2D("sqrt(z)", 'x', new double[] {0, 2}, Color.red);
+		Function2D function03 = new Function2D("1/x", 'x', new double[] {-5, -1}, Color.green);
+//		Function2D function04 = new Function2D("sin(z)/cos(z)", 'x', new double[] {-4, 4}, Color.blue);
+//		Function2D function05 = new Function2D("sin(z)/cos(z)", 'y', new double[] {-4, 4}, Color.orange);
 		
 		/*
 		 * give the functions to the canvas
 		 */
-		canvas2d.addFunction2D(function01);
-		canvas2d.addFunction2D(function02);
+//		canvas2d.addFunction2D(function01);
+//		canvas2d.addFunction2D(function02);
 		canvas2d.addFunction2D(function03);
-		canvas2d.addFunction2D(function04);
-		canvas2d.addFunction2D(function05);
+//		canvas2d.addFunction2D(function04);
+//		canvas2d.addFunction2D(function05);
 		
 		/*
 		 * create a jframe and add canvas to it
@@ -49,6 +49,23 @@ public class MainForTesting {
 		canvas2d.setOutputArea(new int[] {-5, 5, -5, 5});
 		
 		frame.setVisible(true);
+		canvas2d.repaint();
+		
+		/*
+		 * changing functions
+		 */
+		function03.setRange(new double[] {-3, 3});
+		function03.setRange(new double[] {-3, 2});
+		function03.setRange(new double[] {-3, 1});
+		function03.setRange(new double[] {-3, 0});
+//		function03.setRange(new double[] {-5, -2});
+		
+		/*
+		 * update canvas
+		 */
+		canvas2d.repaint();
+		frame.repaint();
+		
 		
 	}
 	
