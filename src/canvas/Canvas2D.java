@@ -268,7 +268,7 @@ public class Canvas2D extends JPanel {
 			currentFunction = functions2D.get(i);
 			currentFunctionPoints = currentFunction.getPoints(0.1);
 
-			if (currentFunction.emptyRange()) {
+			if (currentFunction.emptyRange() || !currentFunction.isVisible()) {
 				continue;
 			}
 
@@ -321,16 +321,19 @@ public class Canvas2D extends JPanel {
 					getPointAt(currentFunctionPoints.get(0).getRe(), currentFunctionPoints.get(0).getIm()).y - dotwidth,
 					2 * dotwidth, 2 * dotwidth);
 			g.fillOval(
-					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(), currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).x - dotwidth,
-					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(), currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).y - dotwidth,
+					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(),
+							currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).x - dotwidth,
+					getPointAt(currentFunctionPoints.get(currentFunctionPoints.size() - 1).getRe(),
+							currentFunctionPoints.get(currentFunctionPoints.size() - 1).getIm()).y - dotwidth,
 					2 * dotwidth, 2 * dotwidth);
 		}
 
 	}
-	
+
 	private boolean isInOutputRange(Complex point) {
-		
-		return point.getRe() >= outputArea[0] && point.getRe() <= outputArea[1] && point.getIm() >= outputArea[2] && point.getIm() <= outputArea[3];
+
+		return point.getRe() >= outputArea[0] && point.getRe() <= outputArea[1] && point.getIm() >= outputArea[2]
+				&& point.getIm() <= outputArea[3];
 	}
 
 	/**
@@ -615,6 +618,14 @@ public class Canvas2D extends JPanel {
 		return paintableDimension;
 	}
 
+	/**
+	 * @return returns the 2d functions arraylist
+	 */
+	public ArrayList<Function2D> get2DFunctions() {
+
+		return functions2D;
+	}
+
 	/* SETTERS */
 
 	public void setDefaultValues() {
@@ -676,7 +687,7 @@ public class Canvas2D extends JPanel {
 
 		functions2D.add(function);
 	}
-	
+
 	/**
 	 * @param outputArea adjust the output area size
 	 */

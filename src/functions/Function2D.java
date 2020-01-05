@@ -26,11 +26,12 @@ public class Function2D {
 												// coordinates
 	private double[] range; // range for the functionvariable, where this function is active (length == 2)
 	private Color functionColor; // color of this function if it gets painted
+	private boolean isVisible = true; // false if the function should not be painted
 
 	/*
 	 * CONSTRUCTORS
 	 */
-	
+
 	/**
 	 * Constructor of a real 2D function. functionpoints in the given range will be
 	 * calculated with distance {@code DEFAULt_CALCULATION_STEP} while in this
@@ -58,11 +59,11 @@ public class Function2D {
 		// set range for this function
 		setRange(range);
 	}
-	
+
 	/*
 	 * MAIN METHOD
 	 */
-	
+
 	/*
 	 * OTHER METHODS
 	 */
@@ -162,6 +163,22 @@ public class Function2D {
 	/*
 	 * GETTERS
 	 */
+
+	/**
+	 * @return the equation of this function as a string
+	 */
+	public String getFunctionEquation() {
+
+		return functionEquation;
+	}
+
+	/**
+	 * @return the range of this function
+	 */
+	public double[] getRange() {
+
+		return range;
+	}
 
 	/**
 	 * returns the color of this function
@@ -375,10 +392,24 @@ public class Function2D {
 			return false;
 		}
 	}
+	
+	/**
+	 * @return true if this function shall be visible
+	 */
+	public boolean isVisible() {
+		return isVisible;
+	}
 
 	/*
 	 * SETTERS
 	 */
+
+	/**
+	 * @param value {@code true} equals visible, {@code false} equals not visible
+	 */
+	public void setVisible(boolean value) {
+		isVisible = value;
+	}
 
 	/**
 	 * sets a new range for this function and calculates the functionpoints
