@@ -392,7 +392,7 @@ public class Function2D {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @return true if this function shall be visible
 	 */
@@ -430,5 +430,14 @@ public class Function2D {
 		for (double inputValue = range[0]; inputValue <= range[1]; inputValue += DEFAULT_CALCULATION_STEP) {
 			getOutputValue(inputValue);
 		}
+	}
+
+	/**
+	 * @param newColor the new color for this function
+	 */
+	public void setColor(Color newColor) {
+
+		functionColor = newColor;
+
 	}
 }
