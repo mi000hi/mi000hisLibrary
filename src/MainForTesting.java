@@ -33,7 +33,7 @@ public class MainForTesting {
 		 */
 //		Function2D function01 = new Function2D("0-sqrt(-z)", 'x', new double[] {-2, 0}, Color.yellow);
 //		Function2D function02 = new Function2D("sqrt(z)", 'x', new double[] {0, 2}, Color.red);
-		Function2D function03 = new Function2D("1/x", 'x', new double[] { -5, -1 }, Color.green);
+		Function2D function03 = new Function2D("1/x", 'x', new double[] { -5, 5 }, Color.green);
 //		Function2D function04 = new Function2D("sin(z)/cos(z)", 'x', new double[] {-4, 4}, Color.blue);
 //		Function2D function05 = new Function2D("sin(z)/cos(z)", 'y', new double[] {-4, 4}, Color.orange);
 
@@ -65,11 +65,7 @@ public class MainForTesting {
 		/*
 		 * changing functions
 		 */
-		function03.setRange(new double[] { -3, 3 });
-		function03.setRange(new double[] { -3, 2 });
-		function03.setRange(new double[] { -3, 1 });
-		function03.setRange(new double[] { -3, 0 });
-//		function03.setRange(new double[] {-5, -2});
+		
 
 		/*
 		 * update canvas

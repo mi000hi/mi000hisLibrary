@@ -93,6 +93,10 @@ public class Canvas2DFunctionModifier extends JPanel implements Runnable, Action
 	 * OTHER METHODS
 	 */
 
+	/**
+	 * removes all components from this jpanel and adds new ones with the data of
+	 * the functions. this method does not update the actual data of the functions.
+	 */
 	public void showList() {
 
 		// remove all components from this jpanel
@@ -123,6 +127,10 @@ public class Canvas2DFunctionModifier extends JPanel implements Runnable, Action
 		this.repaint();
 	}
 
+	/**
+	 * updates the function data arraylist, but does not update the values on the
+	 * jpanel.
+	 */
 	private void updateListData() {
 
 		// clear old data
@@ -177,6 +185,15 @@ public class Canvas2DFunctionModifier extends JPanel implements Runnable, Action
 		}
 	}
 
+	/**
+	 * reads the input text field for the range of a function, and sets updates the
+	 * range. this method also forces the canvas to repaint
+	 * 
+	 * @param functionIndex the index of the function, whose range has been changed
+	 *                      / should be updated
+	 * @param newRange      the new range for the function in a stringrepresentation
+	 *                      "[...,...]"
+	 */
 	private void readAndChangeRange(int functionIndex, String newRange) {
 
 		// get the functionrange
@@ -204,39 +221,48 @@ public class Canvas2DFunctionModifier extends JPanel implements Runnable, Action
 
 	}
 
+	/**
+	 * reads the textfield of the function {@code functionIndex} and changes the
+	 * color of that given function to the new one. this forces the canvas to be
+	 * repainted
+	 * 
+	 * @param functionIndex the index of the function whose color is to be changed
+	 * @param newColor      the new color for the function as a stringrepresentation
+	 *                      "[r, g, b]", where 0 <= r, g, b < 256
+	 */
 	private void readAndChangeColor(int functionIndex, String newColor) {
-		
+
 		int r = 0, g = 0, b = 0;
 		String[] colors = newColor.replace('[', ' ').replace(']', ' ').replaceAll("\\s", "").split(",");
 
 		try {
-		try {
-			r = Integer.parseInt(colors[0]);
-		} catch (NumberFormatException nfe) {
-			// not important, just let variables on 0
-		}
-		try {
-			g = Integer.parseInt(colors[1]);
-		} catch (NumberFormatException nfe) {
-			// not important, just let variables on 0
-		}
-		try {
-			b = Integer.parseInt(colors[2]);
-		} catch (NumberFormatException nfe) {
-			// not important, just let variables on 0
-		}
+			try {
+				r = Integer.parseInt(colors[0]);
+			} catch (NumberFormatException nfe) {
+				// not important, just let variables on 0
+			}
+			try {
+				g = Integer.parseInt(colors[1]);
+			} catch (NumberFormatException nfe) {
+				// not important, just let variables on 0
+			}
+			try {
+				b = Integer.parseInt(colors[2]);
+			} catch (NumberFormatException nfe) {
+				// not important, just let variables on 0
+			}
 
-		// test value ranges
-		if (r < 0 || r > 255) {
-			r = 0;
-		}
-		if (g < 0 || g > 255) {
-			g = 0;
-		}
-		if (b < 0 || b > 255) {
-			b = 0;
-		}
-		}catch (IndexOutOfBoundsException i) {
+			// test value ranges
+			if (r < 0 || r > 255) {
+				r = 0;
+			}
+			if (g < 0 || g > 255) {
+				g = 0;
+			}
+			if (b < 0 || b > 255) {
+				b = 0;
+			}
+		} catch (IndexOutOfBoundsException i) {
 			// do nothing, values stay on 0
 		}
 
