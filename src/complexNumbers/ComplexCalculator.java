@@ -61,7 +61,7 @@ public class ComplexCalculator {
 
 				case '-':
 //					System.out.println("GUI: \t i = " + i + ", function: " + function);
-					if (openBrackets == 0 && i != 0) { // except case "-n"
+					if (openBrackets == 0 && i != 0 && function.charAt(i - 1) != 'E') { // except case "-n"
 
 						Complex number;
 

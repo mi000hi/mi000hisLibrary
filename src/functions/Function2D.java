@@ -16,14 +16,16 @@ public class Function2D {
 	private final double NOT_INITIALIZED = 12345; // marks a double as not initialized, like a null reference
 	private final double DEFAULT_CALCULATION_STEP = 0.1; // default increment of the inputValue when calculating default
 															// functionvalues in the given range
+	private final String FUNCTION_EQUATION; // string-representation of the function
+	private final char FUNCTION_VARIABLE; // dependency variable of the function, x or y (axis)
+	private final String VECTORFIELD_EQUATION; // string-representation of the vectorfield affecting the function
 
 	/*
 	 * other variables
 	 */
-	private String functionEquation; // string-representation of the function
-	private char functionVariable; // dependency variable of the function, x or y (axis)
 	private ArrayList<Complex> functionPoints; // points of the function as complex numbers, containing x and y
 												// coordinates
+	private ArrayList<Complex> vectorFieldOutputPoints; // points of the function affected by the vectorfield
 	private double[] range; // range for the functionvariable, where this function is active (length == 2)
 	private Color functionColor; // color of this function if it gets painted
 	private boolean isVisible = true; // false if the function should not be painted
@@ -50,11 +52,47 @@ public class Function2D {
 	 */
 	public Function2D(String functionEquation, char functionVariable, double[] range, Color functionColor) {
 
-		this.functionEquation = functionEquation.replaceAll("x", String.valueOf(functionVariable))
+		this.FUNCTION_EQUATION = functionEquation.replaceAll("x", String.valueOf(functionVariable))
 				.replaceAll("y", String.valueOf(functionVariable)).replaceAll("z", String.valueOf(functionVariable));
-		this.functionVariable = functionVariable;
+		this.FUNCTION_VARIABLE = functionVariable;
 		this.functionColor = functionColor;
 		this.functionPoints = new ArrayList<>();
+		this.vectorFieldOutputPoints = new ArrayList<>();
+		this.VECTORFIELD_EQUATION = "";
+
+		// set range for this function
+		setRange(range);
+	}
+
+	/**
+	 * Constructor of a real 2D function. functionpoints in the given range will be
+	 * calculated with distance {@code DEFAULt_CALCULATION_STEP} while in this
+	 * constructor. the rest of the points will be interpolated when the function
+	 * {@code getPoints()} is called. The function with this constructor will be
+	 * affected by the specified vectorfield
+	 * 
+	 * @param functionEquation string representation of the equation for this
+	 *                         function
+	 * @param functionVariable dependency variable of this function. x, y and z in
+	 *                         {@code functionEquation} will be replaced with this
+	 *                         value
+	 * @param range            range of the dependency variable. only points in this
+	 *                         range will be given back by calling the
+	 *                         {@code getPoints()} method
+	 * @param functionColor    color of this function, if you print it as a graph
+	 * @param vectorField      string representation of the vectorfield that affects
+	 *                         this function
+	 */
+	public Function2D(String functionEquation, char functionVariable, double[] range, Color functionColor,
+			String vectorFieldEquation) {
+
+		this.FUNCTION_EQUATION = functionEquation.replaceAll("x", String.valueOf(functionVariable))
+				.replaceAll("y", String.valueOf(functionVariable)).replaceAll("z", String.valueOf(functionVariable));
+		this.FUNCTION_VARIABLE = functionVariable;
+		this.functionColor = functionColor;
+		this.functionPoints = new ArrayList<>();
+		this.vectorFieldOutputPoints = new ArrayList<>();
+		this.VECTORFIELD_EQUATION = vectorFieldEquation;
 
 		// set range for this function
 		setRange(range);
@@ -82,7 +120,11 @@ public class Function2D {
 		int index = getIndex(inputValue);
 
 		// add output point to function points ordered by inputValues from small to big
-		functionPoints.add(index, createComplexNumber(inputValue, outputValue));
+		Complex inputPoint = createComplexNumber(inputValue, outputValue);
+		functionPoints.add(index, inputPoint);
+		if (VECTORFIELD_EQUATION != "") {
+			vectorFieldOutputPoints.add(index, ComplexCalculator.calculate(inputPoint, VECTORFIELD_EQUATION));
+		}
 	}
 
 	/**
@@ -96,14 +138,14 @@ public class Function2D {
 	 */
 	private Complex createComplexNumber(double inputValue, double outputValue) {
 
-		switch (functionVariable) {
+		switch (FUNCTION_VARIABLE) {
 		case 'x':
 			return new Complex(inputValue, outputValue, true);
 		case 'y':
 			return new Complex(outputValue, inputValue, true);
 		}
 
-		System.err.println("invalid functionVariable: " + functionVariable);
+		System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 		return null;
 	}
 
@@ -116,13 +158,13 @@ public class Function2D {
 	 */
 	private boolean isPointInRange(Complex point) {
 
-		switch (functionVariable) {
+		switch (FUNCTION_VARIABLE) {
 		case 'x':
 			return point.getRe() >= range[0] && point.getRe() <= range[1];
 		case 'y':
 			return point.getIm() >= range[0] && point.getIm() <= range[1];
 		default:
-			System.err.println("invalid functionVariable: " + functionVariable);
+			System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 			return false;
 		}
 	}
@@ -139,7 +181,7 @@ public class Function2D {
 
 		double inputValue = (getInputValue(previousIndex) + getInputValue(previousIndex + 1)) / 2;
 //		inputValue = Math.round(inputValue * Math.pow(10, NUMBER_OF_DECIMAL_INPUTDIGITS)) / Math.pow(10, NUMBER_OF_DECIMAL_INPUTDIGITS);
-		Complex output = ComplexCalculator.calculate(new Complex(inputValue, 0), functionEquation);
+		Complex output = ComplexCalculator.calculate(new Complex(inputValue, 0), FUNCTION_EQUATION);
 
 		double outputValue;
 		if (output == null) {
@@ -147,7 +189,42 @@ public class Function2D {
 		} else {
 			outputValue = output.getRe();
 		}
-		functionPoints.add(previousIndex + 1, createComplexNumber(inputValue, outputValue));
+		Complex inputPoint = createComplexNumber(inputValue, outputValue);
+		functionPoints.add(previousIndex + 1, inputPoint);
+		if (VECTORFIELD_EQUATION != "") {
+			vectorFieldOutputPoints.add(previousIndex + 1,
+					ComplexCalculator.calculate(inputPoint, VECTORFIELD_EQUATION));
+		}
+	}
+
+	/**
+	 * interpolates a functionpoint after the given functionvalue.
+	 * 
+	 * @param previousOutputPoint the function point before the one to be calculated
+	 * @return the new interpolated functionpoint
+	 */
+	public Complex interpolateFunctionPoint(Complex previousFunctionValue, Complex followingFunctionValue) {
+
+		int previousIndex = 0, followingIndex = 0;
+		switch (FUNCTION_VARIABLE) {
+		case 'x':
+			previousIndex = getIndex(previousFunctionValue.getRe());
+			followingIndex = getIndex(followingFunctionValue.getRe());
+			break;
+		case 'y':
+			previousIndex = getIndex(previousFunctionValue.getIm());
+			followingIndex = getIndex(followingFunctionValue.getIm());
+			break;
+		default:
+			System.err.println("interpolating functionpoint, default case");
+		}
+
+		// retrun already calculated point
+		if (previousIndex + 1 < followingIndex) {
+			return functionPoints.get((int) ((previousIndex + followingIndex) / 2.0));
+		}
+		addFunctionPoint(previousIndex);
+		return functionPoints.get(previousIndex + 1);
 	}
 
 	/**
@@ -169,7 +246,7 @@ public class Function2D {
 	 */
 	public String getFunctionEquation() {
 
-		return functionEquation;
+		return FUNCTION_EQUATION;
 	}
 
 	/**
@@ -208,7 +285,7 @@ public class Function2D {
 
 		// test if y = f(x) is already calculated
 		for (Complex c : functionPoints) {
-			switch (functionVariable) {
+			switch (FUNCTION_VARIABLE) {
 			case 'x':
 				if (c.getRe() == inputValue) {
 					return c;
@@ -220,12 +297,12 @@ public class Function2D {
 				}
 				break;
 			default:
-				System.err.println("invalid functionVariable: " + functionVariable);
+				System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 			}
 		}
 
 		// value was not already calculated, calculate value now
-		Complex complexOutput = ComplexCalculator.calculate(new Complex(inputValue, 0), functionEquation);
+		Complex complexOutput = ComplexCalculator.calculate(new Complex(inputValue, 0), FUNCTION_EQUATION);
 		if (complexOutput == null) {
 			addPointToFunctionPoints(inputValue, NOT_INITIALIZED);
 			return null;
@@ -237,16 +314,13 @@ public class Function2D {
 	}
 
 	/**
-	 * returns functionpoints in the range of this function, where 2 points next to
-	 * each other have a maximum scalar distance of {@code maxDistance}. except if
-	 * there are {@code null} points, what means we divided almost with 0.
+	 * returns the inputpoints of this function to the vectorfield of this function
 	 * 
-	 * @param maxDistance maximum scalar distance of two points in the 2D coordinate
-	 *                    space
-	 * @return many functionpoints in the functionrange {@code range} representing
-	 *         this function
+	 * @param maxDistance the maximum distance between two calculated points
+	 * @return a arraylist containing all the points of this function that we will
+	 *         use as inputpoints of the vectorfield
 	 */
-	public ArrayList<Complex> getPoints(double maxDistance) {
+	private ArrayList<Complex> getVectorFieldInputPoints(double maxDistance) {
 
 		ArrayList<Complex> result = new ArrayList<>(); // saves all the points that we will return
 		Complex lastPoint, currentPoint = null; // last watched point and currently watched point from the
@@ -288,11 +362,11 @@ public class Function2D {
 				continue;
 			}
 
-			if (currentPoint.subtract(result.get(result.size() - 1)).getRadius() > maxDistance) {
+			if (currentPoint.distanceTo(result.get(result.size() - 1)) > maxDistance) {
 				if (result.get(result.size() - 1) == lastPoint) {
 
 					// interpolate function points until we are below the maxDistance
-					while (currentPoint.subtract(result.get(result.size() - 1)).getRadius() > maxDistance
+					while (currentPoint.distanceTo(result.get(result.size() - 1)) > maxDistance
 							&& !(currentPoint.getRe() == NOT_INITIALIZED || currentPoint.getIm() == NOT_INITIALIZED)) {
 //						System.out.println("interpolating functionpoint");
 						addFunctionPoint(i - 1);
@@ -317,6 +391,81 @@ public class Function2D {
 				return result;
 			}
 		}
+
+		return result;
+
+	}
+
+	/**
+	 * returns functionpoints in the range of this function, where 2 points next to
+	 * each other have a maximum scalar distance of {@code maxDistance}. except if
+	 * there are {@code null} points, what means we divided almost with 0.
+	 * 
+	 * @param maxDistance maximum scalar distance of two points in the 2D coordinate
+	 *                    space
+	 * @return many functionpoints in the functionrange {@code range} representing
+	 *         this function
+	 */
+	public ArrayList<Complex> getPoints(double maxDistance) {
+
+		ArrayList<Complex> result = getVectorFieldInputPoints(maxDistance);
+
+		if (VECTORFIELD_EQUATION == "") {
+			return result;
+		}
+
+		// if we have a vectorfield, means we get here, calculate the affected points
+		// and return those
+
+		System.out.println("calculating affected points");
+		for (int i = 0; i < result.size(); i++) {
+			result.set(i, ComplexCalculator.calculate(result.get(i), VECTORFIELD_EQUATION));
+		}
+
+		return result;
+	}
+
+	/**
+	 * calculates the output points of this function when the vectorfield is
+	 * applied. we need to specify the inputpoints in order to know which points we
+	 * want to have because we can not interpolate from here. (at the moment)
+	 * 
+	 * @param inputPoints the points of this function, that we will apply the
+	 *                    vectorfield on
+	 * @return the arraylist containing the affected points of the vectorfield
+	 */
+	private ArrayList<Complex> getVectorFieldOutputPoints(ArrayList<Complex> inputPoints) {
+
+		ArrayList<Complex> result = new ArrayList<>();
+
+		if (VECTORFIELD_EQUATION == "") {
+			result = (ArrayList<Complex>) inputPoints.clone();
+			return result;
+		}
+
+		// if we have a vectorfield, means we get here, calculate the affected points
+		// and return those
+		for (int i = 0; i < inputPoints.size(); i++) {
+			result.add(ComplexCalculator.calculate(inputPoints.get(i), VECTORFIELD_EQUATION));
+		}
+
+		return result;
+	}
+
+	/**
+	 * returns both inputpoints and outputpoints when this function goes into the
+	 * vectorfield
+	 * 
+	 * @param maxDistance maximum distance between two points
+	 * @return
+	 */
+	public ArrayList<ArrayList<Complex>> getInputAndOutputPoints(double maxDistance) {
+
+		ArrayList<ArrayList<Complex>> result = new ArrayList<>();
+
+		result.add(getVectorFieldInputPoints(maxDistance));
+		result.add(getVectorFieldOutputPoints(result.get(0)));
+
 		return result;
 	}
 
@@ -329,13 +478,13 @@ public class Function2D {
 	 */
 	private double getInputValue(int index) {
 
-		switch (functionVariable) {
+		switch (FUNCTION_VARIABLE) {
 		case 'x':
 			return functionPoints.get(index).getRe();
 		case 'y':
 			return functionPoints.get(index).getIm();
 		default:
-			System.err.println("invalid functionVariable: " + functionVariable);
+			System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 			return 0;
 		}
 	}
@@ -351,7 +500,7 @@ public class Function2D {
 	private int getIndex(double inputValue) {
 
 		for (int i = 0; i < functionPoints.size(); i++) {
-			switch (functionVariable) {
+			switch (FUNCTION_VARIABLE) {
 			case 'x':
 				if (functionPoints.get(i).getRe() >= inputValue) {
 					return i;
@@ -363,7 +512,7 @@ public class Function2D {
 				}
 				break;
 			default:
-				System.err.println("invalid functionVariable: " + functionVariable);
+				System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 				return 0;
 			}
 		}
@@ -382,13 +531,13 @@ public class Function2D {
 	 */
 	private boolean isLastPointInRange(Complex point) {
 
-		switch (functionVariable) {
+		switch (FUNCTION_VARIABLE) {
 		case 'x':
 			return point.getRe() == range[1];
 		case 'y':
 			return point.getIm() == range[1];
 		default:
-			System.err.println("invalid functionVariable: " + functionVariable);
+			System.err.println("invalid functionVariable: " + FUNCTION_VARIABLE);
 			return false;
 		}
 	}

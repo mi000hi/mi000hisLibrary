@@ -146,5 +146,15 @@ public class Complex {
 		return result;
 
 	}
+	
+	public double distanceTo(Complex number) {
+		
+		return this.subtract(number).getRadius();
+	}
+	
+	public boolean equals(Complex number) {
+		
+		return real == number.real && imaginary == number.imaginary;
+	}
 
 }
