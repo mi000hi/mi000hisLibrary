@@ -197,95 +197,6 @@ public class Canvas2D extends JPanel {
 	}
 
 	/**
-	 * draws the vector field calculated from a complex function.
-	 * 
-	 * @param g use graphics to directly draw on the jpanel
-	 */
-	private void draw2DVectorField(Graphics g) {
-
-		ArrayList<ArrayList<Complex>> currentVectorField;
-		ArrayList<Complex> currentFunction;
-		Complex currentPoint;
-		Point lastP, currentP;
-		Color currentColor;
-		int vectorFieldGridFunctionSize = vectorFieldGridFunctions.size();
-		Graphics2D g2 = (Graphics2D) g;
-		double distanceToLastPoint, distanceToNextPoint;
-		int start, end;
-
-		// determine which gridfunctions to draw
-		if (paintHorizontalLines) {
-			start = 0;
-		} else {
-			start = vectorFieldGridFunctionSize / 2;
-		}
-		if (paintVerticalLines) {
-			end = vectorFieldGridFunctionSize;
-		} else {
-			end = vectorFieldGridFunctionSize / 2;
-		}
-
-		// draw each function of the grid
-		for (int i = start; i < end; i++) {
-
-//			System.out.println("drawing function " + i + " with " + functions.get(i).size() + " points");
-
-			currentFunction = vectorFieldGridFunctions.get(i);
-			if (i < vectorFieldGridFunctionSize / 2) {
-				currentColor = getColor(i,
-						(int) (i / (vectorFieldGridFunctionSize / 2)) * (vectorFieldGridFunctionSize / 2),
-						(vectorFieldGridFunctionSize / 2)
-								+ (int) (i / (vectorFieldGridFunctionSize / 2)) * (vectorFieldGridFunctionSize / 2));
-			} else {
-				currentColor = getColor2(i,
-						(int) (i / (vectorFieldGridFunctionSize / 2)) * (vectorFieldGridFunctionSize / 2),
-						(vectorFieldGridFunctionSize / 2)
-								+ (int) (i / (vectorFieldGridFunctionSize / 2)) * (vectorFieldGridFunctionSize / 2));
-			}
-			lastP = getPointAt(currentFunction.get(0).getRe(), currentFunction.get(0).getIm());
-			distanceToLastPoint = 0;
-
-			if (i == 0 || i == vectorFieldGridFunctionSize / 2 - 1 || i == vectorFieldGridFunctionSize / 2
-					|| i == vectorFieldGridFunctionSize - 1) {
-				g.setColor(Color.white);
-				g2.setStroke(new BasicStroke(vectorFieldGridLineWidth * 2));
-			} else {
-				g.setColor(currentColor);
-				g2.setStroke(new BasicStroke(vectorFieldGridLineWidth));
-			}
-
-			// draw each outputPoint
-			for (int j = 0; j < currentFunction.size(); j++) {
-
-				currentPoint = currentFunction.get(j);
-
-//					System.out.println("LEINWAND2D: \t drawing point at " + currentPoint.getRe() + " + i(" + currentPoint.getIm() + ")");
-
-				// draw connecting line
-				if (currentPoint != null && vectorFieldGridLines) {
-					currentP = getPointAt(currentPoint.getRe(), currentPoint.getIm());
-
-					if (paintFunctionPoints) {
-						g.fillOval(currentP.x - dotwidth / 2, currentP.y - dotwidth / 2, dotwidth, dotwidth);
-					}
-
-					distanceToNextPoint = Math
-							.sqrt(Math.pow(lastP.x - currentP.x, 2) + Math.pow(lastP.y - currentP.y, 2));
-					if (distanceToNextPoint > 5 * distanceToLastPoint) {
-						lastP = currentP;
-					}
-					g2.draw(new Line2D.Float(lastP.x, lastP.y, currentP.x, currentP.y));
-
-					lastP = currentP;
-					distanceToLastPoint = distanceToNextPoint;
-				}
-			}
-
-		}
-
-	}
-
-	/**
 	 * Draws the functions y = g(x)
 	 * 
 	 * @param g use graphics to draw on the jpanel
@@ -435,94 +346,6 @@ public class Canvas2D extends JPanel {
 
 	}
 
-	private void draw2DVectorFieldFunctions(Graphics g) {
-
-		VectorFieldFunction2D currentFunction;
-		ArrayList<ArrayList<Complex>> currentFunctionPoints;
-		ArrayList<Complex> currentInputFunctionPoints;
-		ArrayList<Complex> currentOutputFunctionPoints;
-		Complex currentPoint;
-		Point lastP, currentP = new Point(0, 0);
-		Color currentColor;
-		double distanceToLastPoint, distanceToNextPoint;
-
-		// draw each inputfunction
-		for (int i = 0; i < vectorFieldFunctions2D.size(); i++) {
-
-//			System.out.println("drawing function " + i + " with " + functions.get(i).size() + " points");
-
-			currentFunction = vectorFieldFunctions2D.get(i);
-			currentFunctionPoints = currentFunction.getPoints(0.5);
-			currentInputFunctionPoints = currentFunctionPoints.get(0);
-			currentOutputFunctionPoints = currentFunctionPoints.get(1);
-
-			if (currentFunction.emptyInputFunctionRange() || !currentFunction.isVisible()) {
-				continue;
-			}
-
-			currentColor = currentFunction.getColor();
-			lastP = getPointAt(currentOutputFunctionPoints.get(0).getRe(), currentOutputFunctionPoints.get(0).getIm());
-			distanceToLastPoint = Double.MAX_VALUE;
-
-			g.setColor(currentColor);
-
-			// draw each outputPoint
-			for (int j = 0; j < currentOutputFunctionPoints.size(); j++) {
-
-				if ((currentPoint = currentOutputFunctionPoints.get(j)) == null || !isInOutputRange(currentPoint)) {
-					lastP = currentP;
-					continue;
-				}
-
-//					System.out.println("LEINWAND2D: \t drawing point at " + currentPoint.getRe() + " + i(" + currentPoint.getIm() + ")");
-				if (functionPoints) {
-					drawPointAt(currentPoint.getRe(), currentPoint.getIm(), g, currentColor);
-				}
-
-				// draw connecting line
-				if (functionLines) {
-					currentP = getPointAt(currentPoint.getRe(), currentPoint.getIm());
-					// g.drawLine(lastP.x, lastP.y, currentP.x, currentP.y);
-
-					Graphics2D g2 = (Graphics2D) g;
-					g2.setStroke(new BasicStroke(functionLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
-					distanceToNextPoint = Math
-							.sqrt(Math.pow(lastP.x - currentP.x, 2) + Math.pow(lastP.y - currentP.y, 2));
-					if (distanceToNextPoint > 5 * distanceToLastPoint) {
-						lastP = currentP;
-					}
-					g2.draw(new Line2D.Float(lastP.x, lastP.y, currentP.x, currentP.y));
-
-					if (!lastP.equals(currentP)) {
-
-						lastP = currentP;
-						distanceToLastPoint = distanceToNextPoint;
-					}
-				}
-			}
-
-			// draw a bigger dot at the first and last point
-			// TODO: use last painted index instead of last point index
-			g.setColor(Color.white);
-			g.fillOval(
-					getPointAt(currentOutputFunctionPoints.get(0).getRe(), currentOutputFunctionPoints.get(0).getIm()).x
-							- dotwidth,
-					getPointAt(currentOutputFunctionPoints.get(0).getRe(), currentOutputFunctionPoints.get(0).getIm()).y
-							- dotwidth,
-					2 * dotwidth, 2 * dotwidth);
-			g.fillOval(
-					getPointAt(currentOutputFunctionPoints.get(currentOutputFunctionPoints.size() - 1).getRe(),
-							currentOutputFunctionPoints.get(currentOutputFunctionPoints.size() - 1).getIm()).x
-							- dotwidth,
-					getPointAt(currentOutputFunctionPoints.get(currentOutputFunctionPoints.size() - 1).getRe(),
-							currentOutputFunctionPoints.get(currentOutputFunctionPoints.size() - 1).getIm()).y
-							- dotwidth,
-					2 * dotwidth, 2 * dotwidth);
-		}
-
-	}
-
 	private boolean isInOutputRange(Complex point) {
 
 		return point.getRe() >= outputArea[0] - PRINTAREATOLERANCE
@@ -538,75 +361,6 @@ public class Canvas2D extends JPanel {
 
 		return point.x >= bottomLeftCorner.x && point.x <= topRightCorner.x && point.y >= topRightCorner.y
 				&& point.y <= bottomLeftCorner.y;
-	}
-
-	/**
-	 * Draws the functions y = g(x)
-	 * 
-	 * @param g use graphics to draw on the jpanel
-	 */
-	private void drawFunctions(Graphics g) {
-
-		ArrayList<Complex> currentFunction;
-		Complex currentPoint;
-		Point lastP, currentP = new Point(0, 0);
-		Color currentColor;
-		double distanceToLastPoint, distanceToNextPoint;
-
-		// draw each inputfunction
-		for (int i = 0; i < functions.size(); i++) {
-
-//			System.out.println("drawing function " + i + " with " + functions.get(i).size() + " points");
-
-			currentFunction = functions.get(i);
-			currentColor = functionColors.get(i);
-			lastP = getPointAt(currentFunction.get(0).getRe(), currentFunction.get(0).getIm());
-			distanceToLastPoint = 0;
-
-			g.setColor(currentColor);
-
-			// draw each outputPoint
-			for (int j = 0; j < currentFunction.size(); j++) {
-
-				if ((currentPoint = currentFunction.get(j)) == null) {
-					lastP = currentP;
-					continue;
-				}
-
-//					System.out.println("LEINWAND2D: \t drawing point at " + currentPoint.getRe() + " + i(" + currentPoint.getIm() + ")");
-				if (functionPoints) {
-					drawPointAt(currentPoint.getRe(), currentPoint.getIm(), g, currentColor);
-				}
-
-				// draw connecting line
-				if (functionLines) {
-					currentP = getPointAt(currentPoint.getRe(), currentPoint.getIm());
-					// g.drawLine(lastP.x, lastP.y, currentP.x, currentP.y);
-
-					Graphics2D g2 = (Graphics2D) g;
-					g2.setStroke(new BasicStroke(functionLineWidth));
-
-					distanceToNextPoint = Math
-							.sqrt(Math.pow(lastP.x - currentP.x, 2) + Math.pow(lastP.y - currentP.y, 2));
-					if (distanceToNextPoint > 5 * distanceToLastPoint) {
-						lastP = currentP;
-					}
-					g2.draw(new Line2D.Float(lastP.x, lastP.y, currentP.x, currentP.y));
-
-					// draw a bigger dot at the first and last point
-					if (j == 0 || j == currentFunction.size() - 1) {
-						g.setColor(Color.white);
-						g.fillOval(currentP.x - dotwidth, currentP.y - dotwidth, 2 * dotwidth, 2 * dotwidth);
-						g.setColor(currentColor);
-					}
-
-					lastP = currentP;
-					distanceToLastPoint = distanceToNextPoint;
-				}
-			}
-
-		}
-
 	}
 
 	/**
@@ -853,7 +607,7 @@ public class Canvas2D extends JPanel {
 		dotwidth = 5;
 		functionPoints = false;
 		functionLines = true;
-		functionLineWidth = 5;
+		functionLineWidth = 2;
 		vectorFieldGridLineWidth = 2;
 		vectorFieldGridLines = true;
 		paintVerticalLines = true;

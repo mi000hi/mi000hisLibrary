@@ -333,20 +333,28 @@ public class Canvas2DFunctionModifier extends JPanel implements Runnable, Action
 	@Override
 	public void keyReleased(KeyEvent e) {
 
-		JTextField tf = (JTextField) e.getSource();
-		int functionID = Integer.parseInt(tf.getName().split(",")[0]);
-		int type = Integer.parseInt(tf.getName().split(",", 2)[1]);
+		if (isNumberKey(e.getKeyCode())) {
+			JTextField tf = (JTextField) e.getSource();
+			int functionID = Integer.parseInt(tf.getName().split(",")[0]);
+			int type = Integer.parseInt(tf.getName().split(",", 2)[1]);
 
-		if (type == TYPES.indexOf("range")) { // update range
-			readAndChangeRange(functionID, ((JTextField) e.getSource()).getText());
-		}
+			if (type == TYPES.indexOf("range")) { // update range
+				readAndChangeRange(functionID, ((JTextField) e.getSource()).getText());
+			}
 
-		if (type == TYPES.indexOf("color")) { // update color
-			readAndChangeColor(functionID, ((JTextField) e.getSource()).getText());
-		}
+			if (type == TYPES.indexOf("color")) { // update color
+				readAndChangeColor(functionID, ((JTextField) e.getSource()).getText());
+			}
 
 //		updateListData();
-		canvas2d.repaint();
+			canvas2d.repaint();
+		}
 
+	}
+
+	private boolean isNumberKey(int keyCode) {
+
+//		System.out.println(keyCode);
+		return !(37 <= keyCode && keyCode <= 40);
 	}
 }

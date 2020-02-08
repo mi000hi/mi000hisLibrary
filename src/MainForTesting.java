@@ -43,8 +43,8 @@ public class MainForTesting {
 //		Function2D function04 = new Function2D("sin(z)/cos(z)", 'x', new double[] {-4, 4}, Color.blue);
 //		Function2D function05 = new Function2D("sin(z)/cos(z)", 'y', new double[] {-4, 4}, Color.orange);
 		
-		VectorField2D vectorField01 = new VectorField2D("z", 0.5, new double[] {-5, 5, -5, 5}, Color.yellow);
-		VectorField2D vectorField02 = new VectorField2D("exp(z)", 0.5, new double[] {-5, 5, -5, 5}, Color.green);
+		VectorField2D vectorField01 = new VectorField2D("exp(z)", 0.1, new double[] {-3, 3, 0, 6}, Color.yellow);
+//		VectorField2D vectorField02 = new VectorField2D("exp(z)", 0.5, new double[] {-5, 5, -5, 5}, Color.green);
 
 		/*
 		 * give the functions to the canvas
@@ -56,7 +56,7 @@ public class MainForTesting {
 //		canvas2d.addFunction2D(function05);
 		
 		canvas2d.addVectorField2D(vectorField01);
-		canvas2d.addVectorField2D(vectorField02);
+//		canvas2d.addVectorField2D(vectorField02);
 		
 		/*
 		 * create a jframe and add canvas to it

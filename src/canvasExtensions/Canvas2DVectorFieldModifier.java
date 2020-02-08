@@ -154,7 +154,8 @@ public class Canvas2DVectorFieldModifier extends JPanel implements Runnable, Act
 			data[dataIndex++] = new JLabel(v.getVectorFieldEquation());
 
 			double[] range = v.getRange();
-			JTextField rangeField = new JTextField("[ " + range[0] + ", " + range[1] + ", " + range[2] + ", " + range[3] + " ]");
+			JTextField rangeField = new JTextField(
+					"[ " + range[0] + ", " + range[1] + ", " + range[2] + ", " + range[3] + " ]");
 			rangeField.setName(Integer.toString(i) + "," + TYPES.indexOf("range"));
 			rangeField.setFont(LIST_FONT);
 			rangeField.setSize(FIELD01_WIDTH, COMPONENT_HEIGHT);
@@ -350,20 +351,29 @@ public class Canvas2DVectorFieldModifier extends JPanel implements Runnable, Act
 	@Override
 	public void keyReleased(KeyEvent e) {
 
-		JTextField tf = (JTextField) e.getSource();
-		int functionID = Integer.parseInt(tf.getName().split(",")[0]);
-		int type = Integer.parseInt(tf.getName().split(",", 2)[1]);
+		if (isNumberKey(e.getKeyCode())) {
+			JTextField tf = (JTextField) e.getSource();
+			int functionID = Integer.parseInt(tf.getName().split(",")[0]);
+			int type = Integer.parseInt(tf.getName().split(",", 2)[1]);
 
-		if (type == TYPES.indexOf("range")) { // update range
-			readAndChangeRange(functionID, ((JTextField) e.getSource()).getText());
-		}
+			if (type == TYPES.indexOf("range")) { // update range
+				readAndChangeRange(functionID, ((JTextField) e.getSource()).getText());
+			}
 
-		if (type == TYPES.indexOf("color")) { // update color
-			readAndChangeColor(functionID, ((JTextField) e.getSource()).getText());
-		}
+			if (type == TYPES.indexOf("color")) { // update color
+				readAndChangeColor(functionID, ((JTextField) e.getSource()).getText());
+			}
 
 //		updateListData();
-		canvas2d.repaint();
+			canvas2d.repaint();
 
+		}
+
+	}
+
+	private boolean isNumberKey(int keyCode) {
+	
+//		System.out.println(keyCode);
+		return !(37 <= keyCode && keyCode <= 40);
 	}
 }

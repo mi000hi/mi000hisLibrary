@@ -156,7 +156,7 @@ public class Function2D {
 	 * @param point the point that is tested
 	 * @return {@code true} if the given point is in the range or on its border
 	 */
-	private boolean isPointInRange(Complex point) {
+	public boolean isPointInRange(Complex point) {
 
 		switch (FUNCTION_VARIABLE) {
 		case 'x':
@@ -588,5 +588,9 @@ public class Function2D {
 
 		functionColor = newColor;
 
+	}
+
+	public char getFunctionVariable() {
+		return FUNCTION_VARIABLE;
 	}
 }
